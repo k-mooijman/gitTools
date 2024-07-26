@@ -92,6 +92,26 @@ func getGitStatus(path string) string {
 //
 //}
 
+}
+
+func cleanRemoteToOne(response string) string {
+
+	response = strings.Replace(response, "(fetch)", "", -1)
+	response = strings.Replace(response, "(push)", "", -1)
+	response, _ = strings.CutSuffix(response, "\n")
+
+	temp := strings.Split(response, "\n")
+	if len(temp) < 2 {
+		return ""
+	}
+	if temp[0] == temp[1] {
+		response, _ = strings.CutPrefix(temp[0], "origin")
+		response = strings.TrimSpace(response)
+		return response
+	} else {
+		return ""
+	}
+}
 //func cleanRemoteToOne(response string) string {
 //
 //	response = strings.Replace(response, "(fetch)", "", -1)
