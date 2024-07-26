@@ -56,7 +56,7 @@ func getGitRemote(path string) string {
 
 func getGitGetBranches(path string) []string {
 
-	cmd := exec.Command("git", "branch")
+	cmd := exec.Command("git", "branch", "-a")
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
 	response := string(cmdResponse)
