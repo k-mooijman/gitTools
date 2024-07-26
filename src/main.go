@@ -2,12 +2,18 @@ package main
 
 import (
 	"fmt"
+
 	"gitTool/src/lib"
 )
 
 func main() {
 
-	fmt.Printf("Test main.go ")
-	lib.CountFiles()
+	fmt.Printf(" ___________________ \n\n")
+	gitRepos := lib.GetGitRepos("/home/kasper/")
+	fmt.Printf("\n\n ___________________ \n\n")
+
+	for _, value := range gitRepos {
+		fmt.Printf("%v \n", value)
+	}
 
 }
