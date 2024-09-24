@@ -11,12 +11,13 @@ func main() {
 	myRepo := lib.InitRepos()
 
 	fmt.Printf(" ___________________ \n\n")
-	gitRepos := lib.GetGitRepos("/home/kasper/", myRepo)
-	fmt.Printf("\n\n ___________________ \n\n")
+	lib.GetGitRepos("/home/kasper/", myRepo)
+	//gitRepos := lib.GetGitRepos("/home/kasper/development/kasper/projects/", myRepo)
+	//fmt.Printf("\n\n ___________________ \n\n")
 
-	for _, value := range gitRepos {
-		fmt.Printf("%v \n", value)
-	}
+	//for _, value := range gitRepos {
+	//	fmt.Printf("%v \n", value)
+	//}
 
 	myRepo.GetAllInfo()
 	fmt.Printf("******************************* \n")
