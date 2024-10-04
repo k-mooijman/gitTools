@@ -9,7 +9,6 @@ import (
 )
 
 func GetGitRepos(rootPath string, repos *Repos) {
-	var gitRepos []string
 
 	err := filepath.WalkDir(rootPath, func(path string, info fs.DirEntry, err error) error {
 		if err != nil {
@@ -20,7 +19,6 @@ func GetGitRepos(rootPath string, repos *Repos) {
 			if info.Name() == ".git" {
 				gitPath, _ := strings.CutSuffix(path, ".git")
 				repos.addByPath(gitPath)
-				gitRepos = append(gitRepos, gitPath)
 				return filepath.SkipDir
 			}
 		}

@@ -20,6 +20,7 @@ func main() {
 	//}
 
 	myRepo.GetAllInfo()
+
 	fmt.Printf("******************************* \n")
 
 	myRepo.List()
@@ -34,5 +35,9 @@ func main() {
 
 	//lib.GormTest()
 
-	lib.DoFile()
+	myRepo.Store()
+	lib.FileWatcher()
+	//lib.DoFile()
+	lib.WaitForQ()
+
 }

@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
 	"time"
@@ -56,7 +55,7 @@ func getGitFetchDate(path string) time.Time {
 
 	fetchTime, err := time.Parse("2006-01-02 15:04:05.999999 Z0700", response)
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
 		return time.Time{}
 	}
 
