@@ -1,38 +1,123 @@
+//package main
+//
+//import (
+//	"fmt"
+//	"log"
+//	"os"
+//	"path/filepath"
+//	"sync"
+//
+//	"github.com/fsnotify/fsnotify"
+//
+//	"gitTool/src/lib"
+//)
+//
+//func main() {
+//
+//	//myRepo := lib.InitRepos()
+//	//
+//	//fmt.Printf(" ___________________ \n\n")
+//	//lib.GetGitRepos("/home/kasper/", myRepo)
+//	//myRepo.GetAllInfo()
+//	//fmt.Printf("******************************* \n")
+//	//myRepo.List()
+//	//fmt.Printf("******************************* \n")
+//	//myRepo.Store()
+//	//fmt.Printf("******************************* \n")
+//
+//	fmt.Printf(" ___________________ \n\n")
+//
+//	lib.FileWatcher()
+//	//lib.Add("/home/kasper")
+//	//lib.DoFile()
+//	lib.WaitForQ()
+//	fmt.Printf(" ___________________ \n\n")
+//
+//}
+
 package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"sync"
 
-	"gitTool/src/lib"
+	"github.com/fsnotify/fsnotify"
 )
 
+var (
+	watcher *fsnotify.Watcher
+	mu      sync.Mutex
+)
+
+func init() {
+	var err error
+	watcher, err = fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatalf("Failed to create watcher: %v", err)
+	}
+}
+
+func addPath(path string) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	err := filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() && p != path {
+			return watcher.Add(p)
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed to add path %q: %v", path, err)
+	}
+	fmt.Printf("Added path %q to watcher\n", path)
+	return nil
+}
+
+func removePath(path string) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	return watcher.Remove(path)
+}
+
+func startWatching() {
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				fmt.Printf("Event: %s\n", event)
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				fmt.Printf("Error: %s\n", err)
+			}
+		}
+	}()
+}
+
 func main() {
+	startWatching()
 
-	myRepo := lib.InitRepos()
+	// Simulate receiving new paths to watch from another process
+	newPaths := []string{"/home/kasper/temp"}
 
-	fmt.Printf(" ___________________ \n\n")
-	lib.GetGitRepos("/home/kasper/", myRepo)
-	//gitRepos := lib.GetGitRepos("/home/kasper/development/kasper/projects/", myRepo)
-	//fmt.Printf("\n\n ___________________ \n\n")
+	for _, path := range newPaths {
+		if err := addPath(path); err != nil {
+			log.Printf("Failed to add path %q: %v", path, err)
+		}
+	}
 
-	//for _, value := range gitRepos {
-	//	fmt.Printf("%v \n", value)
-	//}
-
-	myRepo.GetAllInfo()
-	fmt.Printf("******************************* \n")
-
-	myRepo.List()
-
-	fmt.Printf("******************************* \n")
-
-	//lib.Store("repos.json", myRepo)
-
-	//yellow := color.New(color.FgYellow).SprintFunc()
-	//red := color.New(color.FgRed).SprintFunc()
-	//fmt.Printf("This is a %s and this is %s.\n", yellow("warning"), red("error"))
-
-	//lib.GormTest()
-
-	lib.DoFile()
+	// Keep the program running
+	select {}
 }
