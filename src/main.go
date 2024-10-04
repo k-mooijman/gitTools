@@ -26,8 +26,13 @@ func main() {
 
 	fmt.Printf("******************************* \n")
 
+	//lib.Store("repos.json", myRepo)
+
 	//yellow := color.New(color.FgYellow).SprintFunc()
 	//red := color.New(color.FgRed).SprintFunc()
 	//fmt.Printf("This is a %s and this is %s.\n", yellow("warning"), red("error"))
 
+	//lib.GormTest()
+
+	lib.DoFile()
 }

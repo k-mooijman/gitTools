@@ -1,0 +1,13 @@
+{
+ "info": "test",
+ "Setting": {
+  "new": {
+   "Type": "new",
+   "Value": "new"
+  },
+  "new2": {
+   "Type": "new",
+   "Value": "new"
+  }
+ }
+}
