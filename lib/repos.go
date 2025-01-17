@@ -9,6 +9,12 @@ import (
 	"github.com/fatih/color"
 )
 
+var yellow = color.New(color.FgYellow).SprintFunc()
+var magenta = color.New(color.FgMagenta).SprintFunc()
+var red = color.New(color.FgRed).SprintFunc()
+var hiMagenta = color.New(color.FgHiMagenta).SprintFunc()
+var green = color.New(color.FgGreen).SprintFunc()
+
 type Repos struct {
 	Repos map[string]*Repo
 }
@@ -38,38 +44,35 @@ func (repos *Repos) addByPath(path string) {
 }
 
 func (repos *Repos) List() {
+	fmt.Printf("  count: %s \n", magenta(len(repos.Repos)))
+
 	for _, repo := range repos.Repos {
-		if !repo.DoMonitor {
-			continue
-		}
-		yellow := color.New(color.FgYellow).SprintFunc()
-		red := color.New(color.FgRed).SprintFunc()
-		hiMagenta := color.New(color.FgHiMagenta).SprintFunc()
-		green := color.New(color.FgGreen).SprintFunc()
-		magenta := color.New(color.FgMagenta).SprintFunc()
+		//if !repo.DoMonitor {
+		//	continue
+		//}
 
 		fmt.Printf("Repo: %s \n", yellow(repo.Location))
-		emptyTime := time.Time{}
-		t := time.Now()
-		t2 := t.AddDate(0, 0, -14)
-		if repo.LastFetchTime == emptyTime {
-			fmt.Printf("  LastFetch: %s \n", magenta("never fetched"))
+		//emptyTime := time.Time{}
+		//t := time.Now()
+		//t2 := t.AddDate(0, 0, -14)
+		//if repo.LastFetchTime == emptyTime {
+		//	fmt.Printf("  LastFetch: %s \n", magenta("never fetched"))
+		//
+		//} else {
+		//	if repo.LastFetchTime.After(t2) {
+		//		fmt.Printf("  LastFetch: %s \n", green(repo.LastFetchTime))
+		//
+		//	} else {
+		//		fmt.Printf("  LastFetch: %s \n", red(repo.LastFetchTime))
+		//
+		//	}
+		//}
 
-		} else {
-			if repo.LastFetchTime.After(t2) {
-				fmt.Printf("  LastFetch: %s \n", green(repo.LastFetchTime))
-
-			} else {
-				fmt.Printf("  LastFetch: %s \n", red(repo.LastFetchTime))
-
-			}
-		}
-
-		fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
-		fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
-		for _, branch := range repo.Branches {
-			fmt.Printf("    Branch %s \n", green(branch))
-		}
+		//fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
+		//fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
+		//for _, branch := range repo.Branches {
+		//	fmt.Printf("    Branch %s \n", green(branch))
+		//}
 	}
 }
 
