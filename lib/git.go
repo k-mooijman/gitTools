@@ -1,7 +1,10 @@
 package lib
 
 import (
+	"errors"
+	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -29,6 +32,36 @@ func getGitCurrentBranch(path string) string {
 	response, _ = strings.CutSuffix(response, "\n")
 
 	return response
+
+}
+func getGitCurrentBranchBA(path string, branch string) (int, int, error) {
+
+	//git rev-list --left-right --count origin/master...master
+	formattedString := fmt.Sprintf("origin/%s...%s", branch, branch)
+
+	cmd := exec.Command("git", "rev-list", "--left-right", "--count", formattedString)
+	cmd.Dir = path
+	cmdResponse, _ := cmd.Output()
+	response := string(cmdResponse)
+	response, _ = strings.CutSuffix(response, "\n")
+	parts := strings.Split(response, "\t")
+
+	if len(parts) != 2 {
+		return 0, 0, errors.New("invalid input format")
+	}
+
+	// Parse each part into an integer
+	num1, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return 0, 0, err
+	}
+
+	num2, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return num1, num2, nil
 
 }
 

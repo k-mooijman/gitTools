@@ -12,7 +12,7 @@ func main() {
 	//
 	//fmt.Printf(" ___________________ \n\n")
 	lib2.GetGitRepos("/home/kasper/", myRepo)
-	//myRepo.GetAllInfo()
+	myRepo.GetAllInfo()
 	//fmt.Printf("******************************* \n")
 	myRepo.List()
 	//fmt.Printf("******************************* \n")

@@ -20,17 +20,21 @@ type Repos struct {
 }
 
 type Repo struct {
-	Location      string
-	DoMonitor     bool
-	Remote        string
-	LastFetchTime time.Time
-	CurrentBranch string
-	Branches      []string
-	Test          string
+	Location            string
+	DoMonitor           bool
+	Remote              string
+	LastFetchTime       time.Time
+	Branches            []string
+	Test                string
+	CurrentBranch       string
+	CurrentBranchAhead  int
+	CurrentBranchBehind int
 }
 
 type Branch struct {
 	Branch string
+	Ahead  int
+	Behind int
 }
 
 func (repos *Repos) addByPath(path string) {
@@ -51,28 +55,34 @@ func (repos *Repos) List() {
 		//	continue
 		//}
 
-		fmt.Printf("Repo: %s \n", yellow(repo.Location))
-		//emptyTime := time.Time{}
-		//t := time.Now()
-		//t2 := t.AddDate(0, 0, -14)
-		//if repo.LastFetchTime == emptyTime {
-		//	fmt.Printf("  LastFetch: %s \n", magenta("never fetched"))
-		//
-		//} else {
-		//	if repo.LastFetchTime.After(t2) {
-		//		fmt.Printf("  LastFetch: %s \n", green(repo.LastFetchTime))
-		//
-		//	} else {
-		//		fmt.Printf("  LastFetch: %s \n", red(repo.LastFetchTime))
-		//
-		//	}
-		//}
+		if repo.CurrentBranchAhead > 0 {
 
-		//fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
-		//fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
-		//for _, branch := range repo.Branches {
-		//	fmt.Printf("    Branch %s \n", green(branch))
-		//}
+			fmt.Printf("Repo: %s \n", yellow(repo.Location))
+			//emptyTime := time.Time{}
+			//t := time.Now()
+			//t2 := t.AddDate(0, 0, -14)
+			//if repo.LastFetchTime == emptyTime {
+			//	fmt.Printf("  LastFetch: %s \n", magenta("never fetched"))
+			//
+			//} else {
+			//	if repo.LastFetchTime.After(t2) {
+			//		fmt.Printf("  LastFetch: %s \n", green(repo.LastFetchTime))
+			//
+			//	} else {
+			//		fmt.Printf("  LastFetch: %s \n", red(repo.LastFetchTime))
+			//
+			//	}
+			//}
+
+			//fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
+			fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
+			fmt.Printf("         : %s Behind %s Ahead \n", green(repo.CurrentBranchBehind), red(repo.CurrentBranchAhead))
+
+			//for _, branch := range repo.Branches {
+			//	fmt.Printf("    Branch %s \n", green(branch))
+			//}
+
+		}
 	}
 }
 
@@ -107,9 +117,9 @@ func (repos *Repos) Store() {
 
 func (repos *Repos) GetAllInfo() {
 	repos.GetBranches()
-	repos.GetRemotes()
+	//repos.GetRemotes()
 	repos.GetCurrentBranch()
-	repos.GetFetchDates()
+	//repos.GetFetchDates()
 }
 
 func (repos *Repos) GetBranches() {
@@ -118,6 +128,15 @@ func (repos *Repos) GetBranches() {
 			continue
 		}
 		repo.Branches = getGitGetBranches(repo.Location)
+		for _, branch := range repo.Branches {
+			behind, ahead, err := getGitCurrentBranchBA(repo.Location, branch)
+			if err != nil {
+				fmt.Printf("Failed to get BA info: %v", err)
+			}
+			repo.CurrentBranchAhead = ahead
+			repo.CurrentBranchBehind = behind
+		}
+
 	}
 }
 
@@ -132,10 +151,16 @@ func (repos *Repos) GetRemotes() {
 
 func (repos *Repos) GetCurrentBranch() {
 	for _, repo := range repos.Repos {
-		if !repo.DoMonitor {
-			continue
-		}
+		//if !repo.DoMonitor {
+		//	continue
+		//}
 		repo.CurrentBranch = getGitCurrentBranch(repo.Location)
+		behind, ahead, err := getGitCurrentBranchBA(repo.Location, repo.CurrentBranch)
+		if err != nil {
+			fmt.Printf("Failed to get BA info: %v", err)
+		}
+		repo.CurrentBranchAhead = ahead
+		repo.CurrentBranchBehind = behind
 	}
 }
 func (repos *Repos) GetFetchDates() {
