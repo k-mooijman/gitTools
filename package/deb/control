@@ -1,0 +1,8 @@
+Package: fleet
+Version: 9.9.9
+Section: database
+Priority: optional
+Architecture: amd64
+Maintainer: BauWatch Technology Group <support@figonet.com>
+Homepage: https://www.bouwatch.nl
+Description: BauWatch Fleet Management Tool

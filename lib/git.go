@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func getGitGetBranches(path string) []string {
-
+func getGitGetBranches(path string) []Branch {
+	var branches []Branch
 	cmd := exec.Command("git", "branch", "-a")
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
@@ -18,8 +18,11 @@ func getGitGetBranches(path string) []string {
 
 	response, _ = strings.CutSuffix(response, "\n")
 	temp := strings.Split(response, "\n")
+	for _, branch := range temp {
+		branches = append(branches, Branch{Branch: branch})
+	}
 
-	return temp
+	return branches
 
 }
 

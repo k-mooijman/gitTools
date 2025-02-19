@@ -14,7 +14,7 @@ func main() {
 	lib2.GetGitRepos("/home/kasper/", myRepo)
 	myRepo.GetAllInfo()
 	//fmt.Printf("******************************* \n")
-	myRepo.List()
+	myRepo.ListAllNeedingAction()
 	//fmt.Printf("******************************* \n")
 	//myRepo.Store()
 	//fmt.Printf("******************************* \n")
@@ -26,6 +26,7 @@ func main() {
 	//lib.DoFile()
 	//lib.WaitForQ()
 	fmt.Printf(" ___________________ \n\n")
+	myRepo.List()
 
 }
 

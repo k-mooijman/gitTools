@@ -1,0 +1,18 @@
+[Unit]
+Description=BauWatch Fleet Management Tool
+After=network-online.target
+Wants=network-online.target
+
+StartLimitIntervalSec=600s
+StartLimitBurst=30
+
+[Service]
+Type=simple
+DynamicUser=yes
+EnvironmentFile=/etc/default/fleet
+ExecStart=/usr/bin/fleet
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
