@@ -1,32 +1,19 @@
 package main
 
 import (
-	"fmt"
+	_ "embed"
 
-	lib2 "gitTool/lib"
+	"gitTool/pkg/app"
 )
+
+//go:generate sh -c "echo '0.1' > version.txt"
+//go:embed version.txt
+var version string
 
 func main() {
 
-	myRepo := lib2.InitRepos()
-	//
-	//fmt.Printf(" ___________________ \n\n")
-	lib2.GetGitRepos("/home/kasper/", myRepo)
-	myRepo.GetAllInfo()
-	//fmt.Printf("******************************* \n")
-	myRepo.ListAllNeedingAction()
-	//fmt.Printf("******************************* \n")
-	//myRepo.Store()
-	//fmt.Printf("******************************* \n")
-
-	fmt.Printf(" ___________________ \n\n")
-
-	//lib.FileWatcher()
-	//lib.Add("/home/kasper")
-	//lib.DoFile()
-	//lib.WaitForQ()
-	fmt.Printf(" ___________________ \n\n")
-	myRepo.List()
+	gtApp := app.New("test")
+	gtApp.Run()
 
 }
 

@@ -1,12 +1,12 @@
-PACKAGE         = fleet
+PACKAGE         = gtools
 PACKAGE_VERSION = $(PACKAGE)_$(VERSION)
 PKG_DIR         = tmp/$(PACKAGE_VERSION)
 DEBIAN_DIR      = $(PKG_DIR)/DEBIAN
 CONF_DIR        = $(PKG_DIR)/etc
 BIN_DIR         = $(PKG_DIR)/usr/bin
 SYSTEMD_DIR     = $(PKG_DIR)/usr/lib/systemd/system
-CONFIGS         = default/fleet
-BINS            = ../fleet
+CONFIGS         = default/$(PACKAGE)
+BINS            = ../$(PACKAGE)
 SERVICES        = $(notdir $(wildcard systemd/*))
 
 CONTROL_FILE  = $(DEBIAN_DIR)/control
