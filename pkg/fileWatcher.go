@@ -6,8 +6,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-var watcher *fsnotify.Watcher
-var err error
+var (
+	watcher *fsnotify.Watcher
+	err     error
+)
 
 func FileWatcher() {
 	// Create new watcher.
@@ -53,7 +55,7 @@ func FileWatcher() {
 
 	basePath := "/home/kasper/development/kasper/projects/gitTools"
 
-	//Add a path.
+	// Add a path.
 	err = watcher.Add(basePath + "/.git")
 	if err != nil {
 		log.Fatal(err)
@@ -64,7 +66,7 @@ func FileWatcher() {
 		log.Fatal(err)
 	}
 
-	//Block main goroutine forever.
+	// Block main goroutine forever.
 	<-make(chan struct{})
 }
 

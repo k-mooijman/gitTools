@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -18,14 +19,11 @@ func New(ops string) *App {
 	}
 }
 
-func (a *App) Run() {
-
-	var (
-		temp string
-	)
+func (a *App) Run(ctx context.Context) {
+	var temp string
 	flag.StringVar(&temp, "api-addr", ":8096", "API listen address")
 
-	//flag.Parse()
+	// flag.Parse()
 	if err := env.ParseWithFlags(); err != nil {
 		log.Fatal("Invalid environment variables or CLI flag: %v", "err", err)
 	}
@@ -51,5 +49,4 @@ func (a *App) Run() {
 	////pkg.WaitForQ()
 	//fmt.Printf(" ___________________ \n\n")
 	//myRepo.List()
-
 }

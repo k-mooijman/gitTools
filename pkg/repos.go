@@ -9,11 +9,13 @@ import (
 	"github.com/fatih/color"
 )
 
-var yellow = color.New(color.FgYellow).SprintFunc()
-var magenta = color.New(color.FgMagenta).SprintFunc()
-var red = color.New(color.FgRed).SprintFunc()
-var hiMagenta = color.New(color.FgHiMagenta).SprintFunc()
-var green = color.New(color.FgGreen).SprintFunc()
+var (
+	yellow    = color.New(color.FgYellow).SprintFunc()
+	magenta   = color.New(color.FgMagenta).SprintFunc()
+	red       = color.New(color.FgRed).SprintFunc()
+	hiMagenta = color.New(color.FgHiMagenta).SprintFunc()
+	green     = color.New(color.FgGreen).SprintFunc()
+)
 
 type Repos struct {
 	Repos map[string]*Repo
@@ -38,13 +40,11 @@ type Branch struct {
 }
 
 func (repos *Repos) addByPath(path string) {
-
 	if _, ok := repos.Repos[path]; !ok {
 		var repo Repo
 		repo.Location = path
 		repos.Repos[path] = &repo
 	}
-
 }
 
 func InitRepos() *Repos {
@@ -70,17 +70,17 @@ func InitRepos() *Repos {
 func (repos *Repos) Store() {
 	file, _ := json.MarshalIndent(repos, "", " ")
 
-	//fmt.Printf("  file: %s  \n", file)
+	// fmt.Printf("  file: %s  \n", file)
 
-	_ = os.WriteFile("repos.json", file, 0644)
+	_ = os.WriteFile("repos.json", file, 0o644)
 	fmt.Printf("Repos written  \n")
 }
 
 func (repos *Repos) GetAllInfo() {
 	repos.GetBranches()
-	//repos.GetRemotes()
+	// repos.GetRemotes()
 	repos.GetCurrentBranch()
-	//repos.GetFetchDates()
+	// repos.GetFetchDates()
 }
 
 func (repos *Repos) GetBranches() {
@@ -124,6 +124,7 @@ func (repos *Repos) GetCurrentBranch() {
 		repo.CurrentBranchBehind = behind
 	}
 }
+
 func (repos *Repos) GetFetchDates() {
 	for _, repo := range repos.Repos {
 		if !repo.DoMonitor {

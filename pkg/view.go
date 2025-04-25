@@ -29,7 +29,7 @@ func (repos *Repos) ListAllNeedingAction() {
 			//	}
 			//}
 
-			//fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
+			// fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
 			fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
 			fmt.Printf("         : %s Behind %s Ahead \n", green(repo.CurrentBranchBehind), red(repo.CurrentBranchAhead))
 
@@ -45,11 +45,12 @@ func (repos *Repos) List() {
 	fmt.Printf("  count: %s \n", magenta(len(repos.Repos)))
 
 	for _, repo := range repos.Repos {
+		fmt.Printf("Repo: %s \n", yellow(repo.Location))
+
 		//if !repo.DoMonitor {
 		//	continue
 		//}
 
-		fmt.Printf("Repo: %s \n", yellow(repo.Location))
 		//emptyTime := time.Time{}
 		//t := time.Now()
 		//t2 := t.AddDate(0, 0, -14)
@@ -66,7 +67,7 @@ func (repos *Repos) List() {
 		//	}
 		//}
 
-		//fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
+		// fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
 		fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
 		fmt.Printf("         : %s Behind %s Ahead \n", green(repo.CurrentBranchBehind), red(repo.CurrentBranchAhead))
 
@@ -75,5 +76,4 @@ func (repos *Repos) List() {
 		}
 
 	}
-
 }

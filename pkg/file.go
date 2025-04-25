@@ -23,9 +23,8 @@ func DoFile() {
 }
 
 func SetSettings() {
-
 	green := color.New(color.FgGreen).SprintFunc()
-	//yellow := color.New(color.FgYellow).SprintFunc()
+	// yellow := color.New(color.FgYellow).SprintFunc()
 
 	settings := settings{}
 	content, err := os.ReadFile("settings.json")
@@ -48,7 +47,7 @@ func SetSettings() {
 	}
 
 	settings.Info = "test"
-	//fmt.Printf("  Remote: %s -- %s \n", green(settings), yellow(settings))
+	// fmt.Printf("  Remote: %s -- %s \n", green(settings), yellow(settings))
 	settings.Setting["new2"] = &setting{Type: "new", Value: "new"}
 	fmt.Printf("  settings: %s \n", green(settings))
 
@@ -56,6 +55,5 @@ func SetSettings() {
 
 	fmt.Printf("  file: %s  \n", file)
 
-	_ = os.WriteFile("settings.json", file, 0644)
-
+	_ = os.WriteFile("settings.json", file, 0o644)
 }

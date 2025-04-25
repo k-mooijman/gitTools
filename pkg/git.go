@@ -23,11 +23,9 @@ func getGitGetBranches(path string) []Branch {
 	}
 
 	return branches
-
 }
 
 func getGitCurrentBranch(path string) string {
-
 	cmd := exec.Command("git", "branch", "--show-current")
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
@@ -35,11 +33,10 @@ func getGitCurrentBranch(path string) string {
 	response, _ = strings.CutSuffix(response, "\n")
 
 	return response
-
 }
-func getGitCurrentBranchBA(path string, branch string) (int, int, error) {
 
-	//git rev-list --left-right --count origin/master...master
+func getGitCurrentBranchBA(path string, branch string) (int, int, error) {
+	// git rev-list --left-right --count origin/master...master
 	formattedString := fmt.Sprintf("origin/%s...%s", branch, branch)
 
 	cmd := exec.Command("git", "rev-list", "--left-right", "--count", formattedString)
@@ -65,11 +62,9 @@ func getGitCurrentBranchBA(path string, branch string) (int, int, error) {
 	}
 
 	return num1, num2, nil
-
 }
 
 func getGitRemote(path string) string {
-
 	cmd := exec.Command("git", "remote", "-v")
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
@@ -78,7 +73,6 @@ func getGitRemote(path string) string {
 }
 
 func getGitFetchDate(path string) time.Time {
-
 	cmd := exec.Command("stat", "-c", "%y", ".git/FETCH_HEAD")
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
@@ -99,7 +93,6 @@ func getGitFetchDate(path string) time.Time {
 }
 
 func cleanRemoteToOne(response string) string {
-
 	response = strings.Replace(response, "(fetch)", "", -1)
 	response = strings.Replace(response, "(push)", "", -1)
 	response, _ = strings.CutSuffix(response, "\n")

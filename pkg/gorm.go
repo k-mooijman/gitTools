@@ -16,7 +16,6 @@ type Product struct {
 }
 
 func GormTest() {
-
 	green := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 	red := color.New(color.FgRed).SprintFunc()
@@ -41,7 +40,7 @@ func GormTest() {
 
 	// Read
 	var product Product
-	//db.First(&product, 1)                 // find product with integer primary key
+	// db.First(&product, 1)                 // find product with integer primary key
 	db.First(&product, "code = ?", "D42") // find product with code D42
 
 	fmt.Printf("  Remote: %s -- %s \n", green(product.Code), yellow(product.Price))
