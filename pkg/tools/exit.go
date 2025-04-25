@@ -1,12 +1,13 @@
-package pkg
+package tools
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 )
 
-func WaitForQ() {
+func WaitForQ(ctx context.Context) {
 	for {
 		scanner := bufio.NewScanner(os.Stdin)
 		fmt.Print("Enter command (q/quit/exit): ")

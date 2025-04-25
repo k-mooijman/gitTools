@@ -2,33 +2,28 @@ package app
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"log"
 
-	"gitlab.com/slxh/go/env"
+	"gitTool/pkg/tools"
 )
 
-type App struct {
-	Ops string `json:"ops"`
+type Ops struct {
+	TestString string `json:"testString"`
 }
 
-func New(ops string) *App {
+type App struct {
+	Ops Ops `json:"ops"`
+}
+
+func New(ops Ops) *App {
 	return &App{
 		Ops: ops,
 	}
 }
 
 func (a *App) Run(ctx context.Context) {
-	var temp string
-	flag.StringVar(&temp, "api-addr", ":8096", "API listen address")
 
-	// flag.Parse()
-	if err := env.ParseWithFlags(); err != nil {
-		log.Fatal("Invalid environment variables or CLI flag: %v", "err", err)
-	}
-
-	fmt.Printf("Added path %q to watcher\n", temp)
+	fmt.Printf(tools.Green("Added path %q to watcher\n"), a.Ops.TestString)
 
 	//myRepo := lib2.InitRepos()
 	////
@@ -49,4 +44,6 @@ func (a *App) Run(ctx context.Context) {
 	////pkg.WaitForQ()
 	//fmt.Printf(" ___________________ \n\n")
 	//myRepo.List()
+
+	tools.WaitForQ(ctx)
 }

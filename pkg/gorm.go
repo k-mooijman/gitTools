@@ -3,7 +3,7 @@ package pkg
 import (
 	"fmt"
 
-	"github.com/fatih/color"
+	"gitTool/pkg/tools"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -16,10 +16,6 @@ type Product struct {
 }
 
 func GormTest() {
-	green := color.New(color.FgGreen).SprintFunc()
-	yellow := color.New(color.FgYellow).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
-
 	db, err := gorm.Open(sqlite.Open("gormTest.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
@@ -43,27 +39,27 @@ func GormTest() {
 	// db.First(&product, 1)                 // find product with integer primary key
 	db.First(&product, "code = ?", "D42") // find product with code D42
 
-	fmt.Printf("  Remote: %s -- %s \n", green(product.Code), yellow(product.Price))
+	fmt.Printf("  Remote: %s -- %s \n", tools.Green(product.Code), tools.Yellow(product.Price))
 
 	// Update - update product's price to 200
 	db.Model(&product).Update("Price", 200)
-	fmt.Printf("  Remote: %s -- %s \n", green(product.Code), yellow(product.Price))
+	fmt.Printf("  Remote: %s -- %s \n", tools.Green(product.Code), tools.Yellow(product.Price))
 
 	// Update - update multiple fields
 	db.Model(&product).Updates(Product{Price: 200, Code: "F42"}) // non-zero fields
-	fmt.Printf("  Remote: %s -- %s \n", green(product.Code), yellow(product.Price))
+	fmt.Printf("  Remote: %s -- %s \n", tools.Green(product.Code), tools.Yellow(product.Price))
 
 	db.Model(&product).Updates(map[string]interface{}{"Price": 200, "Code": "F42"})
 
-	fmt.Printf("  Remote: %s -- %s \n", green(product.Code), yellow(product.Price))
+	fmt.Printf("  Remote: %s -- %s \n", tools.Green(product.Code), tools.Yellow(product.Price))
 
 	// Get all records
 	result := db.Find(&products)
 	// SELECT * FROM users;
-	fmt.Printf("  Result: %s -- %s \n", green(result.RowsAffected), yellow(result.Error))
+	fmt.Printf("  Result: %s -- %s \n", tools.Green(result.RowsAffected), tools.Yellow(result.Error))
 
 	for _, prod := range products {
-		fmt.Printf("  Remote         : %s --> %s -- %s \n", red(prod.ID), green(prod.Code), yellow(prod.Price))
+		fmt.Printf("  Remote         : %s --> %s -- %s \n", tools.Red(prod.ID), tools.Green(prod.Code), tools.Yellow(prod.Price))
 	}
 
 	// Delete - delete product

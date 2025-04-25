@@ -1,20 +1,10 @@
-package pkg
+package git
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/fatih/color"
-)
-
-var (
-	yellow    = color.New(color.FgYellow).SprintFunc()
-	magenta   = color.New(color.FgMagenta).SprintFunc()
-	red       = color.New(color.FgRed).SprintFunc()
-	hiMagenta = color.New(color.FgHiMagenta).SprintFunc()
-	green     = color.New(color.FgGreen).SprintFunc()
 )
 
 type Repos struct {
@@ -39,7 +29,7 @@ type Branch struct {
 	Behind int
 }
 
-func (repos *Repos) addByPath(path string) {
+func (repos *Repos) AddByPath(path string) {
 	if _, ok := repos.Repos[path]; !ok {
 		var repo Repo
 		repo.Location = path

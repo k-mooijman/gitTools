@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
 	_ "embed"
+	"flag"
+	"fmt"
+	"log"
 
 	"gitTool/pkg/app"
+	"gitlab.com/slxh/go/env"
 )
 
 //go:generate sh -c "echo '0.1' > version.txt"
@@ -11,9 +16,22 @@ import (
 var version string
 
 func main() {
+	appOps := app.Ops{}
 
-	gtApp := app.New("test")
-	gtApp.Run()
+	flag.StringVar(&appOps.TestString, "api-addr", ":8096", "API listen address")
+
+	// flag.Parse()
+	if err := env.ParseWithFlags(); err != nil {
+		log.Fatal("Invalid environment variables or CLI flag: %v", "err", err)
+	}
+
+	fmt.Printf("Added path %q to watcher\n", appOps.TestString)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	gtApp := app.New(appOps)
+	gtApp.Run(ctx)
 
 }
 

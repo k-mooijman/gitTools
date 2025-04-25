@@ -1,9 +1,13 @@
-package pkg
+package git
 
-import "fmt"
+import (
+	"fmt"
+
+	"gitTool/pkg/tools"
+)
 
 func (repos *Repos) ListAllNeedingAction() {
-	fmt.Printf("  count: %s \n", magenta(len(repos.Repos)))
+	fmt.Printf("  count: %s \n", tools.Magenta(len(repos.Repos)))
 
 	for _, repo := range repos.Repos {
 		//if !repo.DoMonitor {
@@ -12,7 +16,7 @@ func (repos *Repos) ListAllNeedingAction() {
 
 		if repo.CurrentBranchAhead > 0 {
 
-			fmt.Printf("Repo: %s \n", yellow(repo.Location))
+			fmt.Printf("Repo: %s \n", tools.Yellow(repo.Location))
 			//emptyTime := time.Time{}
 			//t := time.Now()
 			//t2 := t.AddDate(0, 0, -14)
@@ -30,8 +34,8 @@ func (repos *Repos) ListAllNeedingAction() {
 			//}
 
 			// fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
-			fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
-			fmt.Printf("         : %s Behind %s Ahead \n", green(repo.CurrentBranchBehind), red(repo.CurrentBranchAhead))
+			fmt.Printf("  Current: %s \n", tools.HiMagenta(repo.CurrentBranch))
+			fmt.Printf("         : %s Behind %s Ahead \n", tools.Green(repo.CurrentBranchBehind), tools.Red(repo.CurrentBranchAhead))
 
 			//for _, branch := range repo.Branches {
 			//	fmt.Printf("    Branch %s \n", green(branch))
@@ -42,10 +46,10 @@ func (repos *Repos) ListAllNeedingAction() {
 }
 
 func (repos *Repos) List() {
-	fmt.Printf("  count: %s \n", magenta(len(repos.Repos)))
+	fmt.Printf("  count: %s \n", tools.Magenta(len(repos.Repos)))
 
 	for _, repo := range repos.Repos {
-		fmt.Printf("Repo: %s \n", yellow(repo.Location))
+		fmt.Printf("Repo: %s \n", tools.Yellow(repo.Location))
 
 		//if !repo.DoMonitor {
 		//	continue
@@ -68,11 +72,11 @@ func (repos *Repos) List() {
 		//}
 
 		// fmt.Printf("  Remote: %s \n", yellow(repo.Remote))
-		fmt.Printf("  Current: %s \n", hiMagenta(repo.CurrentBranch))
-		fmt.Printf("         : %s Behind %s Ahead \n", green(repo.CurrentBranchBehind), red(repo.CurrentBranchAhead))
+		fmt.Printf("  Current: %s \n", tools.HiMagenta(repo.CurrentBranch))
+		fmt.Printf("         : %s Behind %s Ahead \n", tools.Green(repo.CurrentBranchBehind), tools.Red(repo.CurrentBranchAhead))
 
 		for _, branch := range repo.Branches {
-			fmt.Printf("    Branch %s  - %s Behind %s Ahead \n", green(branch.Branch, branch.Behind, branch.Ahead))
+			fmt.Printf("    Branch %s  - %s Behind %s Ahead \n", tools.Green(branch.Branch, branch.Behind, branch.Ahead))
 		}
 
 	}
