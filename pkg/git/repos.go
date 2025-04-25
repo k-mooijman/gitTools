@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"gitTool/pkg/file"
 )
 
 type Repos struct {
@@ -12,6 +14,8 @@ type Repos struct {
 }
 
 type Repo struct {
+	ID                  int
+	DefaultBranch       string
 	Location            string
 	DoMonitor           bool
 	Remote              string
@@ -27,14 +31,6 @@ type Branch struct {
 	Branch string
 	Ahead  int
 	Behind int
-}
-
-func (repos *Repos) AddByPath(path string) {
-	if _, ok := repos.Repos[path]; !ok {
-		var repo Repo
-		repo.Location = path
-		repos.Repos[path] = &repo
-	}
 }
 
 func InitRepos() *Repos {
@@ -57,29 +53,48 @@ func InitRepos() *Repos {
 	return repos
 }
 
+func (repos *Repos) AddByPath(path string) {
+	if _, ok := repos.Repos[path]; !ok {
+		var repo Repo
+		repo.Location = path
+		repos.Repos[path] = &repo
+	}
+}
+
+func (repos *Repos) AddByPaths(folders []string) {
+	for _, path := range folders {
+		repos.AddByPath(path)
+	}
+}
+
+func (repos *Repos) ScanForFolders() {
+	folders := file.GetGitRepos("/home/kasper/")
+	repos.AddByPaths(folders)
+}
+
 func (repos *Repos) Store() {
 	file, _ := json.MarshalIndent(repos, "", " ")
-
-	// fmt.Printf("  file: %s  \n", file)
-
 	_ = os.WriteFile("repos.json", file, 0o644)
 	fmt.Printf("Repos written  \n")
 }
 
 func (repos *Repos) GetAllInfo() {
-	repos.GetBranches()
-	// repos.GetRemotes()
+	repos.GetDefaultBranches()
 	repos.GetCurrentBranch()
+	// repos.GetRemotes()
 	// repos.GetFetchDates()
+	repos.GetBranches()
 }
 
 func (repos *Repos) GetBranches() {
 	for _, repo := range repos.Repos {
-		if !repo.DoMonitor {
-			continue
-		}
+		fmt.Printf(".")
+		//if !repo.DoMonitor {
+		//	continue
+		//}
 		repo.Branches = getGitGetBranches(repo.Location)
 		for _, branch := range repo.Branches {
+			fmt.Printf("Get for %s \n", branch.Branch)
 			behind, ahead, err := getGitCurrentBranchBA(repo.Location, branch.Branch)
 			if err != nil {
 				fmt.Printf("Failed to get BA info: %v", err)
@@ -89,6 +104,17 @@ func (repos *Repos) GetBranches() {
 		}
 
 	}
+	fmt.Printf("! \n")
+}
+func (repos *Repos) GetDefaultBranches() {
+	for _, repo := range repos.Repos {
+		fmt.Printf(".")
+		//if !repo.DoMonitor {
+		//	continue
+		//}
+		repo.DefaultBranch = getDefaultBranch(repo.Location)
+	}
+	fmt.Printf("! \n")
 }
 
 func (repos *Repos) GetRemotes() {

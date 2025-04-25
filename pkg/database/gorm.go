@@ -1,4 +1,4 @@
-package pkg
+package database
 
 import (
 	"fmt"

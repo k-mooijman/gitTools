@@ -1,9 +1,9 @@
 package git
 
 import (
-	"errors"
 	"fmt"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -47,7 +47,7 @@ func getGitCurrentBranchBA(path string, branch string) (int, int, error) {
 	parts := strings.Split(response, "\t")
 
 	if len(parts) != 2 {
-		return 0, 0, errors.New("invalid input format")
+		return 0, 0, fmt.Errorf("invalid parts : %s \n", cmdResponse)
 	}
 
 	// Parse each part into an integer
@@ -108,4 +108,33 @@ func cleanRemoteToOne(response string) string {
 	} else {
 		return ""
 	}
+}
+
+func getGitStatus(path string) string {
+	// git status --porcelain
+	cmd := exec.Command("git", "status", "--porcelain")
+	cmd.Dir = path
+	cmdResponse, _ := cmd.Output()
+	response := string(cmdResponse)
+	response, _ = strings.CutSuffix(response, "\n")
+
+	return response
+}
+
+func getDefaultBranch(path string) string {
+	// git remote show origin | sed -n '/HEAD branch/s/.*: //p'
+	cmd := exec.Command("git", "remote", "show", "origin")
+
+	cmd.Dir = path
+	cmdResponse, _ := cmd.Output()
+	response := string(cmdResponse)
+	var temp = regexp.MustCompile(`^.*HEAD branch.*:\s*(.*)$`)
+	fmt.Println(temp.MatchString(response))
+
+	//match, _ := regexp.MatchString("^.*HEAD branch.*:\\s*(.*)$", response)
+
+	//fmt.Printf("Default branch %s\n", match)
+	response, _ = strings.CutSuffix(response, "\n")
+
+	return response
 }

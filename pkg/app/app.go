@@ -3,7 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"log"
 
+	"gitTool/pkg/api"
+	"gitTool/pkg/git"
 	"gitTool/pkg/tools"
 )
 
@@ -25,10 +28,23 @@ func (a *App) Run(ctx context.Context) {
 
 	fmt.Printf(tools.Green("Added path %q to watcher\n"), a.Ops.TestString)
 
-	//myRepo := lib2.InitRepos()
-	////
-	////fmt.Printf(" ___________________ \n\n")
-	//lib2.GetGitRepos("/home/kasper/", myRepo)
+	myRepo := git.InitRepos()
+
+	go api.New(ctx, myRepo)
+	myRepo.ScanForFolders()
+	log.Printf("Start Scanning folders \n")
+	//folders := file.GetGitRepos("/home/kasper/")
+	log.Printf("Finished Scanning folders \n")
+
+	//myRepo.AddByPaths(folders)
+	//for _, path := range folders {
+	//
+	//	log.Printf("Found git at : %q\n", path)
+	//
+	//}
+
+	//
+	//
 	//myRepo.GetAllInfo()
 	////fmt.Printf("******************************* \n")
 	//myRepo.ListAllNeedingAction()
@@ -46,4 +62,5 @@ func (a *App) Run(ctx context.Context) {
 	//myRepo.List()
 
 	tools.WaitForQ(ctx)
+
 }

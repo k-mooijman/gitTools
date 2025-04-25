@@ -1,16 +1,13 @@
-package pkg
+package file
 
 import (
 	"fmt"
 	"io/fs"
-	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"gitTool/pkg/git"
 )
 
-func GetGitRepos(rootPath string, repos *git.Repos) {
+func GetGitRepos(rootPath string) (folders []string) {
 	err := filepath.WalkDir(rootPath, func(path string, info fs.DirEntry, err error) error {
 		if err != nil {
 			return nil
@@ -19,7 +16,7 @@ func GetGitRepos(rootPath string, repos *git.Repos) {
 		if info.IsDir() {
 			if info.Name() == ".git" {
 				gitPath, _ := strings.CutSuffix(path, ".git")
-				repos.AddByPath(gitPath)
+				folders = append(folders, gitPath)
 
 				return filepath.SkipDir
 			}
@@ -30,15 +27,5 @@ func GetGitRepos(rootPath string, repos *git.Repos) {
 	if err != nil {
 		fmt.Printf("-> variable - err = %v is of type %T \n", err, err)
 	}
-}
-
-func getGitStatus(path string) string {
-	// git status --porcelain
-	cmd := exec.Command("git", "status", "--porcelain")
-	cmd.Dir = path
-	cmdResponse, _ := cmd.Output()
-	response := string(cmdResponse)
-	response, _ = strings.CutSuffix(response, "\n")
-
-	return response
+	return folders
 }
