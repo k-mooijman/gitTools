@@ -30,7 +30,7 @@ func New(ops Ops) *App {
 }
 
 func (a *App) MustRegisterWith(registerer prometheus.Registerer) {
-	a.ApiServer.MustRegisterWith(prometheus.WrapRegistererWithPrefix("kasper_git_tool", registerer))
+	a.ApiServer.MustRegisterWith(prometheus.WrapRegistererWithPrefix("git_tool_", registerer))
 }
 
 func (a *App) Run(ctx context.Context) {

@@ -11,6 +11,7 @@ import (
 	_ "net/http/pprof"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	"gitTool/pkg/app"
 	"github.com/prometheus/client_golang/prometheus"
@@ -25,8 +26,14 @@ var version string
 var errUnsupportedPlatform = errors.New("unsupported platform")
 
 func main() {
+	const (
+		application = "gitTool"
+	)
+
+	var (
+		browser bool
+	)
 	appOps := app.Ops{}
-	var browser bool
 
 	flag.StringVar(&appOps.TestString, "api-addr", ":8096", "API listen address")
 	flag.BoolVar(&browser, "browser", false, "whether to start a browser")
@@ -57,7 +64,21 @@ func main() {
 
 	gtApp := app.New(appOps)
 	gtApp.MustRegisterWith(prometheus.DefaultRegisterer)
-
+	gauge := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
+			Namespace: strings.ToLower(application),
+			Name:      "build_info",
+			Help:      "A metric containing build information for the application.",
+			ConstLabels: prometheus.Labels{
+				"version":   strings.TrimSpace(version),
+				"goversion": runtime.Version(),
+				"goos":      runtime.GOOS,
+				"goarch":    runtime.GOARCH,
+			},
+		},
+		func() float64 { return 1 },
+	)
+	prometheus.DefaultRegisterer.MustRegister(gauge)
 	gtApp.Run(ctx)
 
 }
