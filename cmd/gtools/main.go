@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
+	"os/exec"
+	"runtime"
 
 	"gitTool/pkg/app"
 	"gitlab.com/slxh/go/env"
@@ -15,10 +18,15 @@ import (
 //go:embed version.txt
 var version string
 
+var errUnsupportedPlatform = errors.New("unsupported platform")
+
 func main() {
 	appOps := app.Ops{}
+	var browser bool
 
 	flag.StringVar(&appOps.TestString, "api-addr", ":8096", "API listen address")
+	flag.BoolVar(&browser, "browser", false, "whether to start a browser")
+	fmt.Printf("browser flag set to %t\n", browser)
 
 	// flag.Parse()
 	if err := env.ParseWithFlags(); err != nil {
@@ -30,9 +38,38 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	if browser {
+		fmt.Printf("Opening browser \n")
+		err := openbrowser("http://localhost:8000")
+		if err != nil {
+			fmt.Errorf("failed to open browser: %w", err)
+		}
+	}
+
 	gtApp := app.New(appOps)
 	gtApp.Run(ctx)
 
+}
+
+func openbrowser(url string) error {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = errUnsupportedPlatform
+	}
+
+	if err != nil {
+		return fmt.Errorf("could not open browser: %w", err)
+	}
+
+	return nil
 }
 
 //################################################################################
