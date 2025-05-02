@@ -2,12 +2,12 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"gitTool/pkg/api"
 	"gitTool/pkg/git"
 	"gitTool/pkg/tools"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type Ops struct {
@@ -15,25 +15,29 @@ type Ops struct {
 }
 
 type App struct {
-	Ops Ops `json:"ops"`
+	Ops       Ops `json:"ops"`
+	Repo      *git.Repos
+	ApiServer *api.Server `json:"apiServer"`
 }
 
 func New(ops Ops) *App {
-	return &App{
+	app := &App{
 		Ops: ops,
 	}
+	app.Repo = git.InitRepos()
+	app.ApiServer = api.New(app.Repo)
+	return app
+}
+
+func (a *App) MustRegisterWith(registerer prometheus.Registerer) {
+	a.ApiServer.MustRegisterWith(prometheus.WrapRegistererWithPrefix("kasper_git_tool", registerer))
 }
 
 func (a *App) Run(ctx context.Context) {
 
-	fmt.Printf(tools.Green("Added path %q to watcher\n"), a.Ops.TestString)
-
-	myRepo := git.InitRepos()
-
-	go api.New(ctx, myRepo)
-	myRepo.ScanForFolders()
+	go a.ApiServer.Run(ctx)
 	log.Printf("Start Scanning folders \n")
-	//folders := file.GetGitRepos("/home/kasper/")
+	a.Repo.ScanForFolders()
 	log.Printf("Finished Scanning folders \n")
 
 	//myRepo.AddByPaths(folders)

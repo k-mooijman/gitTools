@@ -10,22 +10,24 @@ import (
 
 	"gitTool/pkg/git"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
-type server struct {
+type Server struct {
 	repos *git.Repos
+	get   prometheus.Counter
 }
 type action struct {
 	Action string `json:"action"`
 }
 
-func (s *server) getRepositories(w http.ResponseWriter, r *http.Request) {
-
+func (s *Server) getRepositories(w http.ResponseWriter, r *http.Request) {
+	s.get.Inc()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(s.repos.Repos)
 }
 
-func (s *server) getBook(w http.ResponseWriter, r *http.Request) {
+func (s *Server) getBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -51,7 +53,7 @@ func (s *server) getBook(w http.ResponseWriter, r *http.Request) {
 }
 
 // Add a new book
-func (s *server) executeAction(w http.ResponseWriter, r *http.Request) {
+func (s *Server) executeAction(w http.ResponseWriter, r *http.Request) {
 	var action action
 	_ = json.NewDecoder(r.Body).Decode(&action)
 
@@ -70,25 +72,32 @@ func (s *server) executeAction(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(action)
 }
 
-func New(ctx context.Context, gitRepos *git.Repos) {
-	server := &server{
+func New(gitRepos *git.Repos) *Server {
+	server := &Server{
 		repos: gitRepos,
+		get: prometheus.NewCounter(prometheus.CounterOpts{
+			Name: "api_get_hits_total",
+			Help: "Number of API get hits",
+		}),
 	}
-
-	//// Add some dummy data to start with
-	//repos = append(repos, repositorie{ID: 1, Title: "The Go Programming Language", Author: "Alan A. A. Donovan"})
-	//repos = append(repos, repositorie{ID: 2, Title: "Learning Go", Author: "Jon Bodner"})
-
+	return server
+}
+func (s *Server) Run(ctx context.Context) {
 	// Initialize the router
 	r := mux.NewRouter()
 
 	// Define the endpoints
-	r.HandleFunc("/repos/", server.getRepositories).Methods("GET")
-	r.HandleFunc("/repos/{id}", server.getBook).Methods("GET")
-	r.HandleFunc("/set", server.executeAction).Methods("POST")
+	r.HandleFunc("/repos/", s.getRepositories).Methods("GET")
+	r.HandleFunc("/repos/{id}", s.getBook).Methods("GET")
+	r.HandleFunc("/set", s.executeAction).Methods("POST")
 	//r.HandleFunc("/repos", executeAction).Methods("POST")
 
-	// Start the server
+	// Start the Server
 	fmt.Println("Server is running on port 8000...")
 	log.Fatal(http.ListenAndServe(":8000", r))
+}
+
+// MustRegisterWith registers DNS client metrics with the given registerer.
+func (s *Server) MustRegisterWith(r prometheus.Registerer) {
+	r.MustRegister(s.get)
 }

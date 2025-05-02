@@ -7,10 +7,14 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
+	_ "net/http/pprof"
 	"os/exec"
 	"runtime"
 
 	"gitTool/pkg/app"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.com/slxh/go/env"
 )
 
@@ -40,13 +44,20 @@ func main() {
 
 	if browser {
 		fmt.Printf("Opening browser \n")
-		err := openbrowser("http://localhost:8000")
+		err := openbrowser("http://localhost:8000/repos/")
 		if err != nil {
 			fmt.Errorf("failed to open browser: %w", err)
 		}
 	}
 
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":2112", nil)
+	}()
+
 	gtApp := app.New(appOps)
+	gtApp.MustRegisterWith(prometheus.DefaultRegisterer)
+
 	gtApp.Run(ctx)
 
 }
