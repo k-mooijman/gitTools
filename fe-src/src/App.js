@@ -7,9 +7,11 @@ import Contact from "./pages/Contact";
 import NoPage from "./pages/NoPage";
 import Test01 from "./pages/test/test01";
 import Test02 from "./pages/test/Test02";
+import useTest from "./work/test";
 
 
 function App() {
+    useTest();
     return (
         <BrowserRouter>
             <Routes>
