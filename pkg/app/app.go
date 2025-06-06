@@ -2,7 +2,9 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"time"
 
 	"gitTool/pkg/api"
 	"gitTool/pkg/git"
@@ -24,8 +26,8 @@ func New(ops Ops) *App {
 	app := &App{
 		Ops: ops,
 	}
-	app.Repo = git.InitRepos()
 	app.ApiServer = api.New(app.Repo)
+	app.Repo = git.InitRepos()
 	return app
 }
 
@@ -34,11 +36,21 @@ func (a *App) MustRegisterWith(registerer prometheus.Registerer) {
 }
 
 func (a *App) Run(ctx context.Context) {
-
 	go a.ApiServer.Run(ctx)
+	time.Sleep(10 * time.Second)
 	log.Printf("Start Scanning folders \n")
+	message := api.Message{Name: "status", Value: "starting"}
+	err := a.ApiServer.Sent(message)
+	if err != nil {
+		fmt.Printf("Error sent start = %v \n", err)
+	}
 	a.Repo.ScanForFolders()
 	log.Printf("Finished Scanning folders \n")
+	message = api.Message{Name: "status", Value: "finishing"}
+	err = a.ApiServer.Sent(message)
+	if err != nil {
+		fmt.Printf("Error = %v \n", err)
+	}
 
 	//myRepo.AddByPaths(folders)
 	//for _, path := range folders {

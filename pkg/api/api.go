@@ -10,12 +10,14 @@ import (
 
 	"gitTool/pkg/git"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 type Server struct {
 	repos *git.Repos
 	get   prometheus.Counter
+	WS    *websocket.Conn
 }
 type action struct {
 	Action string `json:"action"`
@@ -90,6 +92,8 @@ func (s *Server) Run(ctx context.Context) {
 	r.HandleFunc("/repos/", s.getRepositories).Methods("GET")
 	r.HandleFunc("/repos/{id}", s.getBook).Methods("GET")
 	r.HandleFunc("/set", s.executeAction).Methods("POST")
+	r.HandleFunc("/ws", s.wsEndpoint)
+
 	//r.HandleFunc("/repos", executeAction).Methods("POST")
 
 	// Start the Server
