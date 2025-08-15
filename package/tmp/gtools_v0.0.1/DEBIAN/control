@@ -1,8 +1,0 @@
-Package: gtools
-Version: 0.0.1
-Section: database
-Priority: optional
-Architecture: amd64
-Maintainer: Kasper Mooijman (kasper@mooijman.info)
-Homepage: https://mooijman.info
-Description: Kasper's git tools

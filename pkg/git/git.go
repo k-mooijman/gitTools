@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-func getGitGetBranches(path string) []Branch {
-	var branches []Branch
-	cmd := exec.Command("git", "branch", "-a")
+func getGitGetBranches(path string) []*Branch {
+	var branches []*Branch
+	cmd := exec.Command("git", "branch")
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
 	response := string(cmdResponse)
@@ -19,7 +19,8 @@ func getGitGetBranches(path string) []Branch {
 	response, _ = strings.CutSuffix(response, "\n")
 	temp := strings.Split(response, "\n")
 	for _, branch := range temp {
-		branches = append(branches, Branch{Branch: branch})
+		val := strings.Trim(branch, " *")
+		branches = append(branches, &Branch{Branch: val})
 	}
 
 	return branches
@@ -35,9 +36,12 @@ func getGitCurrentBranch(path string) string {
 	return response
 }
 
-func getGitCurrentBranchBA(path string, branch string) (int, int, error) {
+func getGitCurrentBranchBA(path string, branch string, defaultBranch string) (int, int, error) {
+	if branch == defaultBranch || branch == "" || defaultBranch == "" {
+		return 0, 0, nil
+	}
 	// git rev-list --left-right --count origin/master...master
-	formattedString := fmt.Sprintf("origin/%s...%s", branch, branch)
+	formattedString := fmt.Sprintf("origin/%s...%s", defaultBranch, branch)
 
 	cmd := exec.Command("git", "rev-list", "--left-right", "--count", formattedString)
 	cmd.Dir = path
@@ -127,14 +131,17 @@ func getDefaultBranch(path string) string {
 
 	cmd.Dir = path
 	cmdResponse, _ := cmd.Output()
-	response := string(cmdResponse)
-	var temp = regexp.MustCompile(`^.*HEAD branch.*:\s*(.*)$`)
-	fmt.Println(temp.MatchString(response))
+	s := string(cmdResponse)
 
-	//match, _ := regexp.MatchString("^.*HEAD branch.*:\\s*(.*)$", response)
+	re := regexp.MustCompile(`(?m)^.*HEAD branch.*:\s*(.*)$`)
+	results := re.FindAllStringSubmatch(s, -1)
+	if len(results) < 1 {
+		return ""
+	}
+	if len(results[0]) < 2 {
+		return ""
+	}
+	//fmt.Printf("Default branch %s\n", results[0][1])
 
-	//fmt.Printf("Default branch %s\n", match)
-	response, _ = strings.CutSuffix(response, "\n")
-
-	return response
+	return results[0][1]
 }

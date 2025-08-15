@@ -20,7 +20,7 @@ type Repo struct {
 	DoMonitor           bool
 	Remote              string
 	LastFetchTime       time.Time
-	Branches            []Branch
+	Branches            []*Branch
 	Test                string
 	CurrentBranch       string
 	CurrentBranchAhead  int
@@ -68,7 +68,7 @@ func (repos *Repos) AddByPaths(folders []string) {
 }
 
 func (repos *Repos) ScanForFolders() {
-	folders := file.GetGitRepos("/home/kasper/")
+	folders, _ := file.GetGitRepos("/home/kasper/development/kasper/projects/gitTool/")
 	repos.AddByPaths(folders)
 }
 
@@ -94,15 +94,16 @@ func (repos *Repos) GetBranches() {
 		//}
 		repo.Branches = getGitGetBranches(repo.Location)
 		for _, branch := range repo.Branches {
-			fmt.Printf("Get for %s \n", branch.Branch)
-			behind, ahead, err := getGitCurrentBranchBA(repo.Location, branch.Branch)
-			if err != nil {
-				fmt.Printf("Failed to get BA info: %v", err)
+			if branch.Branch != repo.DefaultBranch {
+				fmt.Printf("Get for %s \n", branch.Branch)
+				behind, ahead, err := getGitCurrentBranchBA(repo.Location, branch.Branch, repo.DefaultBranch)
+				if err != nil {
+					fmt.Printf("Failed to get BA info: %v", err)
+				}
+				branch.Ahead = ahead
+				branch.Behind = behind
 			}
-			branch.Ahead = ahead
-			branch.Behind = behind
 		}
-
 	}
 	fmt.Printf("! \n")
 }
@@ -132,7 +133,7 @@ func (repos *Repos) GetCurrentBranch() {
 		//	continue
 		//}
 		repo.CurrentBranch = getGitCurrentBranch(repo.Location)
-		behind, ahead, err := getGitCurrentBranchBA(repo.Location, repo.CurrentBranch)
+		behind, ahead, err := getGitCurrentBranchBA(repo.Location, repo.CurrentBranch, repo.DefaultBranch)
 		if err != nil {
 			fmt.Printf("Failed to get BA info: %v", err)
 		}
